@@ -1,0 +1,5 @@
+com\store\crudProducto\repository\ProductRepository.class
+com\store\crudProducto\entity\Product.class
+com\store\crudProducto\dto\ProductDto.class
+com\store\crudProducto\service\ProductService.class
+com\store\YuletideBackApplication.class
