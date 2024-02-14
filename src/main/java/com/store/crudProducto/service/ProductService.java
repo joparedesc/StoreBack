@@ -25,11 +25,18 @@ public class ProductService {
         return productRepository.findAll();
     }
 
-    public Product getOneProduct(int id){
-        return productRepository.findById(id).get();
+    public Product getOneProduct(int id) throws ResourceNotFoundException{
+        return productRepository.findById(id).orElseThrow(
+                ()-> new ResourceNotFoundException("Product not found")
+        );
     }
 
-    public Product saveProduct(ProductDto productDto){
+    public Product saveProduct(ProductDto productDto) throws AttributeException {
+
+        if(productRepository.existsByName(productDto.getName())){
+            throw new AttributeException("Name already in use");
+        }
+
         int id=autoIncrementId();
         Product product=new Product(id,productDto.getName(),productDto.getPrice());
         return productRepository.save(product);
@@ -44,8 +51,10 @@ public class ProductService {
         return productRepository.save(product);
     }
 
-    public Product deleteProduct(int idProduct){
-        Product product=productRepository.findById(idProduct).get();
+    public Product deleteProduct(int idProduct) throws ResourceNotFoundException {
+        Product product=productRepository.findById(idProduct).orElseThrow(
+                ()-> new ResourceNotFoundException("Product not found")
+        );
         productRepository.delete(product);
         return product;
     }
@@ -87,11 +96,13 @@ public class ProductService {
 
 
 
-    /*
+
     public Product getOne(int id) throws ResourceNotFoundException {
         return productRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Not found"));
     }
+
+    /*
 
     public Product save(ProductDto productDto) throws AttributeException {
         if(productRepository.existsByName(productDto.getName()))
@@ -99,19 +110,19 @@ public class ProductService {
         int id=autoIncrement();
         Product product=new Product(id,productDto.getName(),productDto.getPrice());
         return productRepository.save(product);
-    }
+    }*/
 
     public Product update(int id,ProductDto productDto) throws ResourceNotFoundException, AttributeException {
         Product product=productRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Not found"));
-        productRepository.findByName(productDto.getName()).get().getId();
+
         if(productRepository.existsByName(productDto.getName()) && productRepository.findByName(productDto.getName()).get().getId()!=id)
             throw new AttributeException("Name already in use");
         product.setPrice(productDto.getPrice());
         product.setName(productDto.getName());
         return productRepository.save(product);
     }
-
+    /*
     public Product delete(int id) throws ResourceNotFoundException {
         Product product=productRepository.findById(id)
                 .orElseThrow(()->new ResourceNotFoundException("Not found"));;
